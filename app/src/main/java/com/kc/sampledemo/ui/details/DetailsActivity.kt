@@ -14,16 +14,21 @@ import com.kc.sampledemo.data.network.WebApi
 import com.kc.sampledemo.data.repo.DataRepository
 import com.kc.sampledemo.databinding.ActivityDetailsBinding
 import com.kc.sampledemo.databinding.ActivityMainBinding
+import com.kc.sampledemo.di.kodeinViewModel
 import com.kc.sampledemo.ui.main.EmployeeAdapter
 import com.kc.sampledemo.viewmodel.MainViewModel
 import com.kc.sampledemo.viewmodel.factory.ViewModelFactory
+import org.kodein.di.Kodein
+import org.kodein.di.KodeinAware
+import org.kodein.di.android.kodein
 
-class DetailsActivity : AppCompatActivity() {
+class DetailsActivity : AppCompatActivity(), KodeinAware {
 
+    override val kodein: Kodein by kodein()
     private val TAG = DetailsActivity::class.java.simpleName
     private lateinit var binding: ActivityDetailsBinding
 
-    private lateinit var mainViewModel: MainViewModel
+    private val mainViewModel: MainViewModel by kodeinViewModel()
 
     private lateinit var employeeAdapter : EmployeeAdapter
     private var  employeeList = mutableListOf<Employee>()
@@ -33,11 +38,11 @@ class DetailsActivity : AppCompatActivity() {
         binding = DataBindingUtil.setContentView(this, R.layout.activity_details)
 
         //val networkConnectionInterceptor = NetworkConnectionInterceptor(this)
-        val headerInterceptor = HeaderInterceptor()
-        val webApi = WebApi(headerInterceptor)
-        val dataRepository = DataRepository(webApi)
-        val db = AppDatabase.getDatabase(applicationContext)
-        mainViewModel  = ViewModelProvider(this, ViewModelFactory(dataRepository,db)).get(MainViewModel::class.java)
+//        val headerInterceptor = HeaderInterceptor()
+//        val webApi = WebApi(headerInterceptor)
+//        val dataRepository = DataRepository(webApi)
+//        val db = AppDatabase.getDatabase(applicationContext)
+//        mainViewModel  = ViewModelProvider(this, ViewModelFactory(dataRepository,db)).get(MainViewModel::class.java)
         binding.mMainViewModel = mainViewModel
 
         employeeAdapter = EmployeeAdapter(employeeList) {

@@ -47,7 +47,7 @@ class MainViewModel( private val repository: DataRepository, private val appData
     }
 
     fun getLocalEmployees(){
-        Coroutines.main {
+        Coroutines.io {
             try {
                 movieList.value =  appDatabase.employeeDao().getAll()
             } catch (e : Exception){

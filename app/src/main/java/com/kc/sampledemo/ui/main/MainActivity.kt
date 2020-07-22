@@ -3,28 +3,28 @@ package com.kc.sampledemo.ui.main
 
 import android.content.Intent
 import android.os.Bundle
-import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.Observer
-import androidx.lifecycle.ViewModelProvider
 import com.kc.sampledemo.R
-import com.kc.sampledemo.data.local.AppDatabase
 import com.kc.sampledemo.data.model.Employee
-import com.kc.sampledemo.data.network.HeaderInterceptor
-import com.kc.sampledemo.data.network.WebApi
-import com.kc.sampledemo.data.repo.DataRepository
 import com.kc.sampledemo.databinding.ActivityMainBinding
+import com.kc.sampledemo.di.kodeinViewModel
 import com.kc.sampledemo.ui.details.DetailsActivity
 import com.kc.sampledemo.viewmodel.MainViewModel
-import com.kc.sampledemo.viewmodel.factory.ViewModelFactory
+import org.kodein.di.Kodein
+import org.kodein.di.KodeinAware
+import org.kodein.di.android.kodein
 
-class MainActivity : AppCompatActivity() {
+class MainActivity : AppCompatActivity(), KodeinAware {
+
+    // import manually this package -> import org.kodein.di.android.kodein
+    override val kodein: Kodein by kodein()
 
     private val TAG = MainActivity::class.java.simpleName
     private lateinit var binding: ActivityMainBinding
 
-    private lateinit var mainViewModel: MainViewModel
+    private val mainViewModel: MainViewModel by kodeinViewModel()
 
     private lateinit var employeeAdapter :EmployeeAdapter
     private var  employeeList = mutableListOf<Employee>()
@@ -33,16 +33,10 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         binding = DataBindingUtil.setContentView(this, R.layout.activity_main)
 
-        val headerInterceptor = HeaderInterceptor()
-        val webApi = WebApi(headerInterceptor)
-        val dataRepository = DataRepository(webApi)
-        val db = AppDatabase.getDatabase(applicationContext)
-        mainViewModel  = ViewModelProvider(this,ViewModelFactory(dataRepository,db)).get(MainViewModel::class.java)
         binding.mMainViewModel = mainViewModel
 
         employeeAdapter = EmployeeAdapter(employeeList) {
-            //startActivity(Intent(this,DetailsActivity::class.java))
-            Toast.makeText(this,it.employee_name, Toast.LENGTH_LONG).show()
+            startActivity(Intent(this, DetailsActivity::class.java))
         }
 
         binding.rvEmployee.adapter = employeeAdapter
@@ -58,4 +52,6 @@ class MainActivity : AppCompatActivity() {
             employeeAdapter.notifyDataSetChanged()
         })
     }
+
+
 }

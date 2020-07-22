@@ -2,17 +2,13 @@ package com.kc.sampledemo.viewmodel.factory
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
-import com.kc.sampledemo.data.local.AppDatabase
-import com.kc.sampledemo.data.repo.DataRepository
-import com.kc.sampledemo.viewmodel.MainViewModel
+import org.kodein.di.DKodein
+import org.kodein.di.generic.instanceOrNull
 
 @Suppress("UNCHECKED_CAST")
-class ViewModelFactory(private val repository: DataRepository, private val appDatabase: AppDatabase) : ViewModelProvider.Factory {
+class ViewModelFactory(private val injector: DKodein) : ViewModelProvider.Factory {
     override fun <T : ViewModel?> create(modelClass: Class<T>): T {
-        if (modelClass.isAssignableFrom(MainViewModel::class.java)){
-            return  MainViewModel(repository,appDatabase) as T
-        } else {
-            throw IllegalArgumentException("ViewModel Not Found")
-        }
+        return injector.instanceOrNull<ViewModel>(tag = modelClass.simpleName) as T?
+            ?: modelClass.newInstance()
     }
 }
